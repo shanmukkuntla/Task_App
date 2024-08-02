@@ -1,13 +1,60 @@
 import express from "express";
 import cors from "cors";
 import { v4 as uuidv4 } from "uuid";
+import mongoose from "mongoose";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// In-memory task storage (replace with a database in a real application)
-const tasks = [];
+// Connect to MongoDB
+mongoose.connect("mongodb://localhost:27017/tasks", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+});
+
+const db = mongoose.connection;
+
+db.on("error", (err) => {
+    console.error(err);
+});
+
+db.once("open", () => {
+    console.log("Connected to MongoDB");
+});
+
+// Define the task schema
+const taskSchema = new mongoose.Schema({
+    _id: {
+        type: String,
+        default: uuidv4,
+    },
+    title: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    description: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    completed: {
+        type: Boolean,
+        default: false,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    },
+});
+
+// Create the task model
+const Task = mongoose.model("Task", taskSchema);
 
 // Input validation middleware
 const validateTask = (req, res, next) => {
@@ -19,8 +66,9 @@ const validateTask = (req, res, next) => {
 };
 
 // GET /tasks: Fetch all tasks
-app.get("/tasks", (req, res) => {
+app.get("/tasks", async (req, res) => {
     try {
+        const tasks = await Task.find().sort({ createdAt: -1 });
         res.send(tasks);
     } catch (error) {
         console.error(error);
@@ -29,10 +77,10 @@ app.get("/tasks", (req, res) => {
 });
 
 // GET /tasks/:id: Fetch a specific task by ID
-app.get("/tasks/:id", (req, res) => {
+app.get("/tasks/:id", async (req, res) => {
     try {
         const id = req.params.id;
-        const task = tasks.find((task) => task.id === id);
+        const task = await Task.findById(id);
         if (!task) {
             return res.status(404).send("Task not found");
         }
@@ -44,11 +92,11 @@ app.get("/tasks/:id", (req, res) => {
 });
 
 // POST /tasks: Create a new task
-app.post("/tasks", validateTask, (req, res) => {
+app.post("/tasks", validateTask, async (req, res) => {
     try {
         const { title, description } = req.body;
-        const newTask = { id: uuidv4(), title, description };
-        tasks.push(newTask);
+        const newTask = new Task({ title, description });
+        await newTask.save();
         res.send(newTask);
     } catch (error) {
         console.error(error);
@@ -57,16 +105,18 @@ app.post("/tasks", validateTask, (req, res) => {
 });
 
 // PUT /tasks/:id: Update an existing task by ID
-app.put("/tasks/:id", validateTask, (req, res) => {
+app.put("/tasks/:id", validateTask, async (req, res) => {
     try {
         const id = req.params.id;
-        const task = tasks.find((task) => task.id === id);
+        const task = await Task.findById(id);
         if (!task) {
             return res.status(404).send("Task not found");
         }
         const { title, description } = req.body;
         task.title = title;
         task.description = description;
+        task.updatedAt = Date.now();
+        await task.save();
         res.send(task);
     } catch (error) {
         console.error(error);
@@ -75,14 +125,10 @@ app.put("/tasks/:id", validateTask, (req, res) => {
 });
 
 // DELETE /tasks/:id: Delete a task by ID
-app.delete("/tasks/:id", (req, res) => {
+app.delete("/tasks/:id", async (req, res) => {
     try {
         const id = req.params.id;
-        const taskIndex = tasks.findIndex((task) => task.id === id);
-        if (taskIndex === -1) {
-            return res.status(404).send("Task not found");
-        }
-        tasks.splice(taskIndex, 1);
+        await Task.findByIdAndDelete(id);
         res.send("Task deleted");
     } catch (error) {
         console.error(error);
