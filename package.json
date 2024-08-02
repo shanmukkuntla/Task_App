@@ -1,9 +1,12 @@
 {
-  "homepage": "https://shanmukkuntla.github.io/Task",
-  "name": "keeper-part-3-completed",
+  "homepage": "https://shanmukkuntla.github.io/Task_App",
+  "name": "task-managment-app",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "eslintConfig": {
+    "extends": "react-app"
+  },
   "scripts": {
     "start": "react-scripts start",
     "predeploy": "npm run build",

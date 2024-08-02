@@ -1,15 +1,20 @@
 import React from "react";
 
 function Note(props) {
-  function handleClick() {
-    props.onDelete(props.id);
-  }
-
   return (
-    <div className="note">
-      <h1>{props.title}</h1>
-      <p>{props.content}</p>
-      <button onClick={handleClick}>DELETE</button>
+    <div>
+      <h2>{props.title}</h2>
+      <p>{props.description}</p>
+      <p>Status: {props.status}</p>
+      <p>Due Date: {props.dueDate}</p>
+      <button onClick={() => props.editTask(props.index)}>Edit</button>
+      <button onClick={() => props.updateStatus(props.index, "In Progress")}>
+        Update Status to In Progress
+      </button>
+      <button onClick={() => props.updateStatus(props.index, "Done")}>
+        Update Status to Done
+      </button>
+      <button onClick={() => props.deleteTask(props.index)}>Delete</button>
     </div>
   );
 }
