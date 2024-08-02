@@ -1,8 +1,9 @@
 {
   "homepage": "https://shanmukkuntla.github.io/Task_App",
-  "name": "task-managment-app",
+  "name": "task-app",
   "private": true,
-  "version": "0.0.0",
+  "main": "src/index.js",
+  "version": "1.0.0",
   "type": "module",
   "eslintConfig": {
     "extends": "react-app"
@@ -12,7 +13,7 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "dev": "vite",
-    "build": "vite build",
+    "build": "react-scripts build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -38,6 +39,9 @@
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/preset-react": "^7.24.7",
+    "@rollup/plugin-babel": "^6.0.4",
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
     "@vitejs/plugin-react": "^4.2.1",
@@ -46,6 +50,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "gh-pages": "^6.1.1",
+    "rollup": "^2.34.0",
     "vite": "^5.1.4"
   },
   "browserslist": {

@@ -1,0 +1,10 @@
+{
+  "files": {
+    "main.js": "/Task_App/static/js/main.c7fad433.js",
+    "index.html": "/Task_App/index.html",
+    "main.c7fad433.js.map": "/Task_App/static/js/main.c7fad433.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.c7fad433.js"
+  ]
+}
