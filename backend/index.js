@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import { v4 as uuidv4 } from "uuid";
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
 const app = express();
 app.use(cors());
@@ -22,6 +24,27 @@ db.on("error", (err) => {
 db.once("open", () => {
     console.log("Connected to MongoDB");
 });
+
+// Define the user schema
+const userSchema = new mongoose.Schema({
+    _id: {
+        type: String,
+        default: uuidv4,
+    },
+    username: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    password: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+});
+
+// Create the user model
+const User = mongoose.model("User", userSchema);
 
 // Define the task schema
 const taskSchema = new mongoose.Schema({
@@ -51,6 +74,10 @@ const taskSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    userId: {
+        type: String,
+        required: true,
+    },
 });
 
 // Create the task model
@@ -65,10 +92,25 @@ const validateTask = (req, res, next) => {
     next();
 };
 
-// GET /tasks: Fetch all tasks
-app.get("/tasks", async (req, res) => {
+// Authentication middleware
+const authenticate = async (req, res, next) => {
+    const token = req.header("Authorization");
+    if (!token) {
+        return res.status(401).send("Access denied. No token provided.");
+    }
     try {
-        const tasks = await Task.find().sort({ createdAt: -1 });
+        const decoded = jwt.verify(token, "secretkey");
+        req.user = decoded;
+        next();
+    } catch (error) {
+        return res.status(400).send("Invalid token.");
+    }
+};
+
+// GET /tasks: Fetch all tasks
+app.get("/tasks", authenticate, async (req, res) => {
+    try {
+        const tasks = await Task.find({ userId: req.user._id }).sort({ createdAt: -1 });
         res.send(tasks);
     } catch (error) {
         console.error(error);
@@ -77,12 +119,15 @@ app.get("/tasks", async (req, res) => {
 });
 
 // GET /tasks/:id: Fetch a specific task by ID
-app.get("/tasks/:id", async (req, res) => {
+app.get("/tasks/:id", authenticate, async (req, res) => {
     try {
         const id = req.params.id;
         const task = await Task.findById(id);
         if (!task) {
             return res.status(404).send("Task not found");
+        }
+        if (task.userId !== req.user._id) {
+            return res.status(403).send("Access denied. Task belongs to another user.");
         }
         res.send(task);
     } catch (error) {
@@ -92,10 +137,10 @@ app.get("/tasks/:id", async (req, res) => {
 });
 
 // POST /tasks: Create a new task
-app.post("/tasks", validateTask, async (req, res) => {
+app.post("/tasks", authenticate, validateTask, async (req, res) => {
     try {
         const { title, description } = req.body;
-        const newTask = new Task({ title, description });
+        const newTask = new Task({ title, description, userId: req.user._id });
         await newTask.save();
         res.send(newTask);
     } catch (error) {
@@ -105,12 +150,15 @@ app.post("/tasks", validateTask, async (req, res) => {
 });
 
 // PUT /tasks/:id: Update an existing task by ID
-app.put("/tasks/:id", validateTask, async (req, res) => {
+app.put("/tasks/:id", authenticate, validateTask, async (req, res) => {
     try {
         const id = req.params.id;
         const task = await Task.findById(id);
         if (!task) {
             return res.status(404).send("Task not found");
+        }
+        if (task.userId !== req.user._id) {
+            return res.status(403).send("Access denied. Task belongs to another user.");
         }
         const { title, description } = req.body;
         task.title = title;
@@ -125,15 +173,61 @@ app.put("/tasks/:id", validateTask, async (req, res) => {
 });
 
 // DELETE /tasks/:id: Delete a task by ID
-app.delete("/tasks/:id", async (req, res) => {
+app.delete("/tasks/:id", authenticate, async (req, res) => {
     try {
         const id = req.params.id;
-        await Task.findByIdAndDelete(id);
-        res.send("Task deleted");
+        const task = await Task.findById(id);
+        if (!task) {
+            return res.status(404).send("Task not found");
+        }
+        if (task.userId !== req.user._id) {
+            return res.status(403).send("Access denied. Task belongs to another user.");
+        }
+        await task.remove();
+        res.send("Task deleted successfully");
     } catch (error) {
         console.error(error);
         res.status(500).send("Error occurred");
     }
 });
 
-app.listen(5000, () => console.log("Server is running on port 5000"));
+// User registration
+app.post("/register", async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = new User({ username, password: hashedPassword });
+        await user.save();
+        res.send("User created successfully");
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error occurred");
+    }
+});
+
+// User login
+app.post("/login", async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(401).send("Invalid username or password");
+        }
+        const isValidPassword = await bcrypt.compare(password, user.password);
+        if (!isValidPassword) {
+            return res.status(401).send("Invalid username or password");
+        }
+        const token = jwt.sign({ _id: user._id }, "secretkey", {
+            expiresIn: "1h",
+        });
+        res.send({ token });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error occurred");
+    }
+});
+
+const port = 3000;
+app.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
+});
