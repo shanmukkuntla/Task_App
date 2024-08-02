@@ -3,29 +3,85 @@
   margin: 0;
   box-sizing: border-box;
 }
+
 html {
   font-family: "Montserrat", sans-serif;
 }
+
 body {
   background: #eee;
   padding: 0 16px;
 }
 
 header {
-  background-color: #f5ba13;
+  background-color: #f6c205;
   margin: auto -16px;
   padding: 16px 32px;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 10px 0 rgba(253, 207, 3, 0.3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 header h1 {
   color: #fff;
-  font-family: "McLaren", cursive;
-  font-weight: 200;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+header nav {
+  display: flex;
+  align-items: center;
+}
+
+header nav a {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 20px;
+  transition: all 0.3s ease;
+}
+
+header nav a:hover {
+  opacity: 0.7;
+}
+
+header nav .nav-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+header .search-bar {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #444;
+  border-radius: 10px;
+  margin-left: 20px;
+}
+
+header .search-bar input[type="search"] {
+  background-color: transparent;
+  border: none;
+  padding: 10px;
+  font-size: 1rem;
+  color: #fff;
+  width: 200px;
+}
+
+header .search-bar input[type="search"]:focus {
+  outline: none;
+}
+
+header .search-bar .search-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
 }
 
 footer {
-  position:fixed ;
+  position: fixed;
   text-align: center;
   bottom: 0;
   background-image: linear-gradient(to bottom, rgba(245, 245, 245, 0.8), rgba(235, 235, 235, 0.8));
@@ -36,6 +92,7 @@ footer {
 footer p {
   color: #000;
 }
+
 .note {
   background: #fff;
   border-radius: 10px;
@@ -51,9 +108,12 @@ footer p {
   perspective: 1000px;
   transition: transform 0.5s;
 }
+
 .note.flipped {
-  transform: rotateY(180deg); /* flip the note */
-  transition: transform 0.5s; /* add transition effect */
+  transform: rotateY(180deg);
+  /* flip the note */
+  transition: transform 0.5s;
+  /* add transition effect */
 }
 
 .note:hover {
@@ -122,6 +182,7 @@ form textarea {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   margin-bottom: 16px;
 }
+
 form select {
   width: 100%;
   padding: 12px;
@@ -132,12 +193,14 @@ form select {
   border-radius: 5px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   margin-bottom: 16px;
-  appearance: none; /* remove default dropdown arrow */
+  appearance: none;
+  /* remove default dropdown arrow */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f5ba13' d='M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z'/%3E%3C/svg%3E");
   background-size: 24px 24px;
   background-position: 95% 50%;
   background-repeat: no-repeat;
-  padding-right: 30px; /* add space for dropdown arrow */
+  padding-right: 30px;
+  /* add space for dropdown arrow */
 }
 
 form select:hover {
@@ -174,11 +237,13 @@ form button:hover {
   color: #f5ba13;
   border: 1px solid #f5ba13;
 }
+
 ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
+
 ul li {
   background: #fff;
   border-radius: 7px;
@@ -188,12 +253,14 @@ ul li {
   margin: 16px;
   float: left;
 }
+
 ul li h2 {
   font-size: 1.2em;
   margin-bottom: 6px;
   color: #333;
   font-weight: bold;
 }
+
 ul li p {
   font-size: 1em;
   margin-bottom: 10px;
@@ -201,6 +268,7 @@ ul li p {
   word-wrap: break-word;
   color: #666;
 }
+
 ul li p .status {
   font-size: 0.9em;
   margin-bottom: 4px;
@@ -208,12 +276,14 @@ ul li p .status {
   text-transform: uppercase;
   font-weight: bold;
 }
+
 ul li p .duedate {
   font-size: 0.9em;
   margin-bottom: 10px;
   color: #666;
   font-weight: bold;
 }
+
 ul li button {
   width: 100%;
   padding: 8px;
@@ -225,29 +295,40 @@ ul li button {
 }
 
 ul li button:nth-child(4) {
-  background-color: #4CAF50; /* green */
+  background-color: #4CAF50;
+  /* green */
   color: #fff;
 }
+
 ul li button:nth-child(5) {
-  background-color: #03A9F4; /* blue */
+  background-color: #03A9F4;
+  /* blue */
   color: #fff;
 }
+
 ul li button:nth-child(6) {
-  background-color: #FF9800; /* orange */
+  background-color: #FF9800;
+  /* orange */
   color: #fff;
 }
+
 ul li button:nth-child(7) {
-  background-color: #737febb0; /* red */
+  background-color: #737febb0;
+  /* red */
   color: #fff;
 }
+
 ul li button:nth-child(8) {
-  background-color: #e73c3c; /* red */
+  background-color: #e73c3c;
+  /* red */
   color: #fff;
 }
+
 ul li:hover {
   background: #f5f5f5;
   cursor: pointer;
 }
+
 .edit-form {
   display: flex;
   flex-direction: column;
@@ -255,17 +336,22 @@ ul li:hover {
   border: none;
   border-radius: 5px;
   box-shadow: none;
-  transform: rotateY(0deg); /* initial rotation */
-  transition: transform 0.5s; /* add transition effect */
-  backface-visibility: hidden; 
+  transform: rotateY(0deg);
+  /* initial rotation */
+  transition: transform 0.5s;
+  /* add transition effect */
+  backface-visibility: hidden;
 }
+
 .note.flipped .edit-form {
   transform: rotateY(180deg);
-  transition: transform 0.5s; /* flip the edit form */
+  transition: transform 0.5s;
+  /* flip the edit form */
 }
 
 .note.flipped {
-  transform: rotateY(180deg); /* flip the note */
+  transform: rotateY(180deg);
+  /* flip the note */
 }
 
 .form-input {
@@ -318,4 +404,19 @@ ul li:hover {
   background-color: #fff;
   color: #f5ba13;
   border: 1px solid #f5ba13;
+}
+
+header nav button {
+  margin-left: 25px;
+  border: none;
+  border-radius: 50%;
+  /* make the button round */
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+header nav button:hover {
+  background-color: #ccc;
+  /* change background color on hover */
 }
